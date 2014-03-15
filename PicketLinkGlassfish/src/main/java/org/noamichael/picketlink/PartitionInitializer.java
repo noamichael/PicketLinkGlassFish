@@ -21,34 +21,31 @@ import org.picketlink.idm.model.basic.Realm;
  *
  */
 @Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
+@TransactionManagement(TransactionManagementType.BEAN)
 
 public class PartitionInitializer {
 
-//    @Resource
-//    private UserTransaction userTransaction;
+    @Resource
+    private UserTransaction userTransaction;
     private PartitionManager pm;
 
-    @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
     public void initPartition(@Observes PartitionManagerCreateEvent event) {
-
         pm = event.getPartitionManager();
-        pm.add(new Realm(Realm.DEFAULT_REALM));
-//        try {
-//            if (pm.getPartition(Realm.class, Realm.DEFAULT_REALM) == null) {
-//
-//                this.userTransaction.begin();
-//                pm.add(new Realm(Realm.DEFAULT_REALM));
-//                this.userTransaction.commit();
-//            }
-//
-//        } catch (IllegalStateException | SecurityException | HeuristicMixedException | HeuristicRollbackException | NotSupportedException | RollbackException | SystemException | IdentityManagementException e) {//Exception e's message is PLIDM000404
-//            try {
-//                this.userTransaction.rollback();
-//            } catch (IllegalStateException | SecurityException | SystemException x) {
-//                throw new RuntimeException("Error! " + x);
-//            }
-//            throw new RuntimeException("Could not create default partition.", e);
-//        }
+        try {
+            if (pm.getPartition(Realm.class, Realm.DEFAULT_REALM) == null) {
+
+                this.userTransaction.begin();
+                pm.add(new Realm(Realm.DEFAULT_REALM));
+                this.userTransaction.commit();
+            }
+
+        } catch (IllegalStateException | SecurityException | HeuristicMixedException | HeuristicRollbackException | NotSupportedException | RollbackException | SystemException | IdentityManagementException e) {//Exception e's message is PLIDM000404
+            try {
+                this.userTransaction.rollback();
+            } catch (IllegalStateException | SecurityException | SystemException x) {//Can't roleback: Transaction in in another thread.
+                
+            }
+            throw new RuntimeException("Could not create default partition.", e);//Closed EMF
+        }
     }
 }

@@ -28,10 +28,16 @@ public class IDMInitializer {
 
     @Inject
     private PartitionManager partitionManager;
-
+    
+    @Inject
+    private UserService service;
+    
     @PostConstruct
     public void create() {
 
+        if(service.usersExist()){
+            return;
+        }
         // Create user john
         User john = new User("john");
         john.setEmail("john@acme.com");
