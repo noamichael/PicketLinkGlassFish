@@ -2,69 +2,81 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <p>
-    This quickstart demonstrates how we can use PicketLink IDM's groups and roles to provide authorization checks within an application.
-  </p>
-  
-  <p>
-    The identity management configuration is based on PicketLink's JPAIdentityStore, which uses a database to store the application's
-    users, groups and roles, and the relationships between them.
-  </p>
+    <p>
+        This quickstart demonstrates how we can use PicketLink IDM's groups and roles to provide authorization checks within an application.
+    </p>
 
-<ui:fragment rendered="#{identity.loggedIn}">
-    <div>Congratulations! You are currently logged in as: <b>#{identity.account.loginName}</b></div>
+    <p>
+        The identity management configuration is based on PicketLink's JPAIdentityStore, which uses a database to store the application's
+        users, groups and roles, and the relationships between them.
+    </p>
 
-    <ui:fragment rendered="#{authorizationChecker.hasApplicationRole('superuser')}">
-      <div>You have been granted the 'superuser' application role.</div>
-    </ui:fragment>
-    
-    <ui:fragment rendered="#{authorizationChecker.isMember('sales')}">
-      <div>You are a member of the 'sales' group.</div>
-    </ui:fragment>
-    
-    <ui:fragment rendered="#{authorizationChecker.hasGroupRole('manager', 'sales')}">
-      <div>You have been granted the 'manager' role in the 'sales' group.</div>
+    <ui:fragment rendered="#{identity.loggedIn}">
+        <div>Congratulations! You are currently logged in as: <b>#{identity.account.loginName}</b></div>
+
+        <ui:fragment rendered="#{authorizationChecker.hasApplicationRole('superuser')}">
+            <div>You have been granted the 'superuser' application role.</div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{authorizationChecker.isMember('sales')}">
+            <div>You are a member of the 'sales' group.</div>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{authorizationChecker.hasGroupRole('manager', 'sales')}">
+            <div>You have been granted the 'manager' role in the 'sales' group.</div>
+        </ui:fragment>
+
+        <h:form>
+            <h:commandButton id="logout" value="Log out" action="#{identity.logout}"/>
+        </h:form>
     </ui:fragment>
 
-    <h:form>
-        <h:commandButton id="logout" value="Log out" action="#{identity.logout}"/>
+    <h:form id="loginForm" rendered="#{not identity.loggedIn}">
+        <h:messages globalOnly="true"/>
+
+        <div class="loginRow">
+            <h:outputLabel for="name" value="Username" styleClass="loginLabel"/>
+            <h:inputText id="name" value="#{loginCredentials.userId}"/>
+        </div>
+
+        <div class="loginRow">
+            <h:outputLabel for="password" value="Password" styleClass="loginLabel"/>
+            <h:inputSecret id="password" value="#{loginCredentials.password}" redisplay="true"/>
+        </div>
+
+        <div class="loginRow">
+
+        </div>
+
+        <div class="buttons">
+            <h:commandButton id="login" value="Login" action="#{loginController.login}" styleClass="loginButton"/>
+        </div>
+
+        <p>
+            Tip: you can login with any of the following username/password combinations:
+            <div>john/demo</div>
+            <div>mary/demo</div>
+            <div>jane/demo</div>
+        </p>
+
+        <p>
+            Each of these accounts has different privileges assigned to them.
+        </p>
+
     </h:form>
-</ui:fragment>
+    <h:form>
+        <h:panelGrid>
+            <h:outputLabel for="create_username" value="Username" styleClass="loginLabel" />
+            <h:inputText id="create_username" value="#{loginController.user.loginName}" required="true"/>
 
-<h:form id="loginForm" rendered="#{not identity.loggedIn}">
-    <h:messages globalOnly="true"/>
 
-    <div class="loginRow">
-        <h:outputLabel for="name" value="Username" styleClass="loginLabel"/>
-        <h:inputText id="name" value="#{loginCredentials.userId}"/>
-    </div>
+            <h:outputLabel for="password" value="Password" styleClass="loginLabel"/>
+            <h:inputSecret id="password" value="#{loginController.password}" required="true"/>
+            
+            <h:commandButton value="Create user" action="#{loginController.createUser()}"/>
+        </h:panelGrid>
+    </h:form>
 
-    <div class="loginRow">
-        <h:outputLabel for="password" value="Password" styleClass="loginLabel"/>
-        <h:inputSecret id="password" value="#{loginCredentials.password}" redisplay="true"/>
-    </div>
-
-    <div class="loginRow">
-
-    </div>
-
-    <div class="buttons">
-        <h:commandButton id="login" value="Login" action="#{loginController.login}" styleClass="loginButton"/>
-    </div>
-
-    <p>
-      Tip: you can login with any of the following username/password combinations:
-      <div>john/demo</div>
-      <div>mary/demo</div>
-      <div>jane/demo</div>
-    </p>
-    
-    <p>
-      Each of these accounts has different privileges assigned to them.
-    </p>
-
-</h:form>
-
-<br style="clear:both"/>
+    <br style="clear:both"/>
 
 </html>

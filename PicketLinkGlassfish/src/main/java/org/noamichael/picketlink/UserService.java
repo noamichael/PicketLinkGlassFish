@@ -12,6 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import org.picketlink.annotations.PicketLink;
 import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.IdentityType;
 
 /**
@@ -34,6 +36,9 @@ public class UserService {
     }
     public void addUser(IdentityType user){
         im.add(user);
+    }
+    public void updateCredential(Account user, Password password){
+        im.updateCredential(user, password);
     }
     
 }

@@ -24,13 +24,16 @@ import javax.inject.Named;
 
 import org.picketlink.Identity;
 import org.picketlink.Identity.AuthenticationResult;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.basic.User;
 
 /**
- * We control the authentication process from this action bean, so that in the event of a failed authentication we can add an
- * appropriate FacesMessage to the response.
- * 
+ * We control the authentication process from this action bean, so that in the
+ * event of a failed authentication we can add an appropriate FacesMessage to
+ * the response.
+ *
  * @author Shane Bryzak
- * 
+ *
  */
 @Stateless
 @Named
@@ -41,6 +44,10 @@ public class LoginController {
 
     @Inject
     private FacesContext facesContext;
+    @Inject
+    private UserService service;
+    private User user;
+    private String password;
 
     public void login() {
         AuthenticationResult result = identity.login();
@@ -51,4 +58,49 @@ public class LoginController {
                             + "before trying again."));
         }
     }
+
+    public String createUser() {
+        user = new User();
+        service.addUser(getUser());
+        service.updateCredential(user, new Password(password));
+        user = null;
+        password = "";
+        addMsg("User successfully created.");
+        return null;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void addMsg(String msg) {
+        FacesMessage fMsg = new FacesMessage(msg);
+        fMsg.setSeverity(FacesMessage.SEVERITY_INFO);
+        facesContext.addMessage(null, fMsg);
+    }
+
 }
