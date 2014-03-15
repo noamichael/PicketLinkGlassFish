@@ -16,6 +16,7 @@
  */
 package org.noamichael.picketlink;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -60,10 +61,9 @@ public class LoginController {
     }
 
     public String createUser() {
-        user = new User();
         service.addUser(getUser());
         service.updateCredential(user, new Password(password));
-        user = null;
+        user = new User();
         password = "";
         addMsg("User successfully created.");
         return null;
@@ -101,6 +101,10 @@ public class LoginController {
         FacesMessage fMsg = new FacesMessage(msg);
         fMsg.setSeverity(FacesMessage.SEVERITY_INFO);
         facesContext.addMessage(null, fMsg);
+    }
+    @PostConstruct
+    public void init(){
+        setUser(new User());
     }
 
 }
